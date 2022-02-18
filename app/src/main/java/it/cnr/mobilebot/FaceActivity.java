@@ -673,9 +673,9 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 }
 
                 String message = "Luca Coraci Gay";
-
+                // MANCA LA RISORSA
                 Notification notification = new NotificationCompat.Builder(getApplicationContext(), "My notification")
-                        .setSmallIcon(R.drawable.ic_message)
+                        .setSmallIcon(R.drawable.button_bar_repeat)
                         .setContentTitle("title")
                         .setContentText(message)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
