@@ -1,8 +1,12 @@
 package it.cnr.mobilebot;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.FragmentManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -51,6 +55,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -63,6 +68,8 @@ import android.widget.VideoView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.core.view.ViewCompat;
@@ -114,6 +121,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private Date dragTime = null;
     private static final int SWIPE_THRESHOLD = 100;
     private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+    private NotificationManagerCompat notificationManager;
 
     Animation shake,tristi_contorno,ciglia_tremanti,cuoricino_SX,cuoricino_DX,cuoricino_SX_RED,cuoricino_DX_RED,cuoricino_contorno,
             animation_cry_ciglia, animation_blackdown,animation_fast_fade, animation_fast_fade_inverted, shake_vertical,outrage_anim,
@@ -129,9 +137,9 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
     Handler cryHandler = new Handler();
     Handler handlerBlinker = new Handler();
 
-    private TextView button_reconnect = null;
-    private TextView button_speak = null;
-    private TextView button_stop = null;
+    private ImageButton button_reconnect = null;
+    private ImageButton button_speak = null;
+    private ImageButton button_stop = null;
 
     private static boolean activityVisible;
 
@@ -193,6 +201,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         EventManager.getInstance().addConnectionEventListener(this);
         mDetector = new GestureDetectorCompat(getApplicationContext(),this);
         requestRecordAudioPermission();
+        notificationManager = NotificationManagerCompat.from(this);
 
 
         View decorView = getWindow().getDecorView();
@@ -415,7 +424,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
 
-        final TextView button1 = findViewById(R.id.button_mainButton);
+        final ImageButton button1 = findViewById(R.id.button_mainButton);
         button1.bringToFront();
         button1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -460,7 +469,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
 
-        final TextView button2 = findViewById(R.id.button_mainButton2);
+        final ImageButton button2 = findViewById(R.id.button_mainButton2);
         button2.bringToFront();
         button2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -499,7 +508,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         });
 
-        final TextView button3 = findViewById(R.id.button_mainButton3);
+        final ImageButton button3 = findViewById(R.id.button_mainButton3);
         button3.bringToFront();
         button3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -517,7 +526,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         });
 
 
-        final TextView button4 = findViewById(R.id.button_mainButton4);
+        final ImageButton button4 = findViewById(R.id.button_mainButton4);
         button4.bringToFront();
         button4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -650,8 +659,30 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         occhiView.setOnTouchListener(new View.OnTouchListener() {
 
 
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, final MotionEvent event) {
+
+              ;
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                    NotificationChannel channel = new NotificationChannel("My notification","My notification",NotificationManager.IMPORTANCE_DEFAULT);
+                    NotificationManager manager = getSystemService(NotificationManager.class);
+                    manager.createNotificationChannel(channel);
+                    Toast.makeText(getApplicationContext().getApplicationContext(),"prova",Toast.LENGTH_SHORT).show();
+                }
+
+                String message = "Luca Coraci Gay";
+
+                Notification notification = new NotificationCompat.Builder(getApplicationContext(), "My notification")
+                        .setSmallIcon(R.drawable.ic_message)
+                        .setContentTitle("title")
+                        .setContentText(message)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .build();
+
+                notificationManager.notify(1, notification);
                 //<BLINK>
 
                // System.out.println("EVEMTO: "+event.toString());
@@ -987,10 +1018,10 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         //ViewCompat.setTranslationZ(sopraccigliaView,3);
 
-        final TextView button1 = findViewById(R.id.button_mainButton);
-        final TextView button2 = findViewById(R.id.button_mainButton2);
-        final TextView button3 = findViewById(R.id.button_mainButton3);
-        final TextView button4 = findViewById(R.id.button_mainButton4);
+        final ImageButton button1 = findViewById(R.id.button_mainButton);
+        final ImageButton button2 = findViewById(R.id.button_mainButton2);
+        final ImageButton button3 = findViewById(R.id.button_mainButton3);
+        final ImageButton button4 = findViewById(R.id.button_mainButton4);
 
 
         float sopraccigliaZ =  ViewCompat.getTranslationZ(sopraccigliaView);
