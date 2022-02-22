@@ -142,6 +142,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private ImageButton button_stop = null;
 
     private static boolean activityVisible;
+    ImageButton img;
 
     private AlertDialog tableDialog = null;
     private GestureDetectorCompat mDetector;
@@ -194,6 +195,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         setContentView(R.layout.activity_face);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        img= findViewById(R.id.imageView_ServerStatus);
         mp_ciglia = MediaPlayer.create(FaceActivity.this, R.raw.ciglia);
         mp_button = MediaPlayer.create(FaceActivity.this, R.raw.button_click);
         mp_REC = MediaPlayer.create(FaceActivity.this, R.raw.rec_sound);
@@ -243,6 +245,8 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         button_reconnect= findViewById(R.id.button_mainButton_reconnect);
         button_speak= findViewById(R.id.button_mainButton_speak);
         button_stop= findViewById(R.id.button_mainButton_stop);
+        ImageView img= (ImageView) findViewById(R.id.imageView_ServerStatus);
+
 
         /*
         VideoDialog videoDialogFragment = (VideoDialog) getSupportFragmentManager()
@@ -1713,14 +1717,13 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     public void forceServerOnline(){
-        ImageView img= (ImageView) findViewById(R.id.imageView_ServerStatus);
+
         img.setImageResource(R.drawable.green);
         img.setAnimation(server_online_animazione);
         server_online_animazione.start();
     }
     @Override
     public void serverOnline() {
-        ImageView img= (ImageView) findViewById(R.id.imageView_ServerStatus);
         img.setImageResource(R.drawable.green);
         //Toast.makeText(getApplicationContext(), "Server Online", Toast.LENGTH_LONG).show();
 

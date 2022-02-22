@@ -184,6 +184,7 @@
         android:background="@drawable/status_button"
         android:layout_marginEnd="600dp"
         android:layout_marginBottom="10dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.16"
@@ -228,6 +229,14 @@
             android:orientation="vertical"
             android:scaleType="fitCenter" />
 
+        <ImageView
+            android:id="@+id/occhio_sx"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:scaleType="fitCenter" />
+
 
     </LinearLayout>
 
@@ -236,13 +245,6 @@
         android:layout_height="fill_parent"
         android:orientation="horizontal"
         tools:ignore="MissingConstraints">
-        <ImageView
-            android:id="@+id/occhio_sx"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:scaleType="fitCenter" />
 
         <ImageView
             android:id="@+id/occhio_dx"
