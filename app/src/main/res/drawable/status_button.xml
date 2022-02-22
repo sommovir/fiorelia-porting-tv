@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/occhio_cuore_sx"
         android:state_pressed="true" />
-    <item android:drawable="@drawable/gdot_green_16"
+    <item android:drawable="@drawable/gdot_yellow_16"
         android:state_focused="true" />
     <item android:drawable="@drawable/gdot_red_16" />
 </selector>
