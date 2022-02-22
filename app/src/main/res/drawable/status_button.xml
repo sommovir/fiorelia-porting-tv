@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/gdot_yellow_16"
+    <item android:drawable="@drawable/gdot_red_16"
         android:state_pressed="true" />
     <item android:drawable="@drawable/gdot_yellow_16"
         android:state_focused="true" />
