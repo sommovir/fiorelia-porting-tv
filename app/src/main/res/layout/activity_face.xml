@@ -76,7 +76,7 @@
         android:id="@+id/button_mainButton2"
         android:layout_width="114dp"
         android:layout_height="40dp"
-        android:background="@drawable/repeat_button_status"
+        android:background="@drawable/main_button_repeat"
         android:gravity="center"
         android:text=""
         android:textAlignment="center"
@@ -143,7 +143,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.97" />
 
-    <ImageButton
+    <Button
         android:id="@+id/button_mainButton_speak"
         android:layout_width="44dp"
         android:layout_height="44dp"

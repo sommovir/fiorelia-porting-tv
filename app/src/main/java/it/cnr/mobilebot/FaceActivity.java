@@ -34,6 +34,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.telephony.ims.ImsManager;
 import android.text.InputType;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -138,7 +139,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
     Handler handlerBlinker = new Handler();
 
     private ImageButton button_reconnect = null;
-    private ImageButton button_speak = null;
+    private Button button_speak = null;
     private ImageButton button_stop = null;
 
     private static boolean activityVisible;
@@ -205,6 +206,13 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         requestRecordAudioPermission();
         notificationManager = NotificationManagerCompat.from(this);
 
+        ImageButton button1 = findViewById(R.id.button_mainButton);
+        ImageButton button2 = findViewById(R.id.button_mainButton2);
+        ImageButton button3 = findViewById(R.id.button_mainButton3);
+        ImageButton button4 = findViewById(R.id.button_mainButton4);
+
+
+
 
         View decorView = getWindow().getDecorView();
 // Hide both the navigation bar and the status bar.
@@ -245,7 +253,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         button_reconnect= findViewById(R.id.button_mainButton_reconnect);
         button_speak= findViewById(R.id.button_mainButton_speak);
         button_stop= findViewById(R.id.button_mainButton_stop);
-        ImageView img= (ImageView) findViewById(R.id.imageView_ServerStatus);
+        ImageButton img = findViewById(R.id.imageView_ServerStatus);
 
 
         /*
@@ -340,6 +348,61 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
         button_speak.bringToFront();
+        button_speak.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    button_speak.setBackgroundResource(R.drawable.speak_button_yellow);
+                }else{
+                    button_speak.setBackgroundResource(R.drawable.speak_button);
+                }
+            }
+        });
+
+        button_stop.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    button_stop.setBackgroundResource(R.drawable.stop_yellow);
+                }else{
+                    button_stop.setBackgroundResource(R.drawable.stop_button);
+                }
+            }
+        });
+
+        button_reconnect.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                {
+                    if(b){
+                        button_reconnect.setBackgroundResource(R.drawable.reconnect_green);
+                    }else{
+                        button_reconnect.setBackgroundResource(R.drawable.reconnect);
+                    }
+                }
+            }
+        });
+
+        button_speak.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    button_speak.setBackgroundResource(R.drawable.speak_button_yellow);
+                }else{
+                    button_speak.setBackgroundResource(R.drawable.speak_button);
+                }
+            }
+        });
+        connectionView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    connectionView.setBackgroundResource(R.drawable.speak_button_yellow);
+                }else{
+                    connectionView.setBackgroundResource(R.drawable.speak_button);
+                }
+            }
+        });
         button_speak.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -428,7 +491,6 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
 
-        final ImageButton button1 = findViewById(R.id.button_mainButton);
         button1.bringToFront();
         button1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -442,6 +504,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 } catch(Exception e) { e.printStackTrace(); }
 
                 System.out.println("main button has been pressed");
+                /*
                 Resources res = getApplicationContext().getResources();
                 final Drawable d1 = ResourcesCompat.getDrawable(res, R.drawable.button_bar_start_setting, null);
                 final Drawable d2 = ResourcesCompat.getDrawable(res, R.drawable.button_bar_start_setting_c, null);
@@ -459,7 +522,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         transitionDrawable.startTransition(250);
 
                     }
-                }, 150);
+                }, 150);*/
 
 
                 Intent settingDialog = new Intent(FaceActivity.this, SettingsActivity.class);
@@ -472,9 +535,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
 
-
-        final ImageButton button2 = findViewById(R.id.button_mainButton2);
-        button2.bringToFront();
+        //button2.bringToFront();
         button2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
@@ -487,12 +548,12 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                 System.out.println("repeat button has been pressed");
                 manager.buttonPressed(LoggingTag.REPEAT);
-                Resources res = getApplicationContext().getResources();
+                /*Resources res = getApplicationContext().getResources();
                 final Drawable d1 = ResourcesCompat.getDrawable(res, R.drawable.button_bar_repeat_r, null);
                 final Drawable d2 = ResourcesCompat.getDrawable(res, R.drawable.button_bar_repeat_click_r, null);
 
                 TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{d1,d2});
-                button2.setBackground(transitionDrawable);
+                //button2.setBackground(transitionDrawable);
                 transitionDrawable.startTransition(150);
 
                 new Handler().postDelayed(new Runnable() {
@@ -504,7 +565,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         transitionDrawable.startTransition(250);
 
                     }
-                }, 150);
+                }, 150);*/
 
 
 
@@ -512,7 +573,6 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         });
 
-        final ImageButton button3 = findViewById(R.id.button_mainButton3);
         button3.bringToFront();
         button3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -530,7 +590,6 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         });
 
 
-        final ImageButton button4 = findViewById(R.id.button_mainButton4);
         button4.bringToFront();
         button4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -1022,10 +1081,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         //ViewCompat.setTranslationZ(sopraccigliaView,3);
 
-        final ImageButton button1 = findViewById(R.id.button_mainButton);
-        final ImageButton button2 = findViewById(R.id.button_mainButton2);
-        final ImageButton button3 = findViewById(R.id.button_mainButton3);
-        final ImageButton button4 = findViewById(R.id.button_mainButton4);
+
 
 
         float sopraccigliaZ =  ViewCompat.getTranslationZ(sopraccigliaView);
@@ -1037,15 +1093,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         float palliniViewZ =  ViewCompat.getTranslationZ(palliniView);
         System.out.println("palliniViewZ Z = "+palliniViewZ);
 
-        ViewCompat.setTranslationZ(button1,5);
-        ViewCompat.setTranslationZ(button2,5);
-        ViewCompat.setTranslationZ(button3,5);
-        ViewCompat.setTranslationZ(button4,5);
-        ViewCompat.setTranslationZ(button_speak,5);
-        ViewCompat.setTranslationZ(contorno_occhiView,4);
-        ViewCompat.setTranslationZ(sopraccigliaView,3);
-        ViewCompat.setTranslationZ(palliniView,2);
-        ViewCompat.setTranslationZ(occhiView,1);
+
 
 
 
