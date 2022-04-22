@@ -2,8 +2,6 @@ package it.cnr.mobilebot;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -23,7 +21,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.hardware.display.DisplayManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,9 +31,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.telephony.ims.ImsManager;
 import android.text.InputType;
-import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -50,22 +45,15 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.MediaController;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -74,25 +62,14 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.core.view.ViewCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
-import androidx.preference.PreferenceManager;
 
-import com.vikramezhil.droidspeech.DroidSpeech;
-import com.vikramezhil.droidspeech.OnDSListener;
-
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import at.markushi.ui.CircleButton;
-import it.cnr.mobilebot.logic.CognitiveGame;
-import it.cnr.mobilebot.logic.CognitiveGameListModel;
 import it.cnr.mobilebot.logic.ConnectionEventListener;
 import it.cnr.mobilebot.logic.EventManager;
 import it.cnr.mobilebot.logic.LoggingTag;
@@ -123,6 +100,9 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private static final int SWIPE_THRESHOLD = 100;
     private static final int SWIPE_VELOCITY_THRESHOLD = 100;
     private NotificationManagerCompat notificationManager;
+    Context ctx = FaceActivity.this;
+    private AlertDialog.Builder dialogBuilder;
+    private AlertDialog dialog;
 
     Animation shake,tristi_contorno,ciglia_tremanti,cuoricino_SX,cuoricino_DX,cuoricino_SX_RED,cuoricino_DX_RED,cuoricino_contorno,
             animation_cry_ciglia, animation_blackdown,animation_fast_fade, animation_fast_fade_inverted, shake_vertical,outrage_anim,
@@ -143,7 +123,6 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private ImageButton button_stop = null;
 
     private static boolean activityVisible;
-    ImageButton img;
 
     private AlertDialog tableDialog = null;
     private GestureDetectorCompat mDetector;
@@ -196,7 +175,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         setContentView(R.layout.activity_face);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        img= findViewById(R.id.imageView_ServerStatus);
+        connectionView = findViewById(R.id.imageView_ServerStatus);
         mp_ciglia = MediaPlayer.create(FaceActivity.this, R.raw.ciglia);
         mp_button = MediaPlayer.create(FaceActivity.this, R.raw.button_click);
         mp_REC = MediaPlayer.create(FaceActivity.this, R.raw.rec_sound);
@@ -253,7 +232,6 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         button_reconnect= findViewById(R.id.button_mainButton_reconnect);
         button_speak= findViewById(R.id.button_mainButton_speak);
         button_stop= findViewById(R.id.button_mainButton_stop);
-        ImageButton img = findViewById(R.id.imageView_ServerStatus);
 
 
         /*
@@ -334,8 +312,6 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         aloneInTheRed.setVisibility(View.INVISIBLE);
         vetroRotto.setVisibility(View.INVISIBLE);
 
-        connectionView = findViewById(R.id.imageView_ServerStatus);
-
         try {
             TextView versionView = findViewById(R.id.version);
 
@@ -348,6 +324,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
         button_speak.bringToFront();
+        button_stop.setVisibility(View.INVISIBLE);
         button_speak.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -359,30 +336,6 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         });
 
-        button_stop.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(b){
-                    button_stop.setBackgroundResource(R.drawable.stop_yellow);
-                }else{
-                    button_stop.setBackgroundResource(R.drawable.stop_button);
-                }
-            }
-        });
-
-        button_reconnect.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                {
-                    if(b){
-                        button_reconnect.setBackgroundResource(R.drawable.reconnect_green);
-                    }else{
-                        button_reconnect.setBackgroundResource(R.drawable.reconnect);
-                    }
-                }
-            }
-        });
-
         button_speak.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -390,16 +343,6 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     button_speak.setBackgroundResource(R.drawable.speak_button_yellow);
                 }else{
                     button_speak.setBackgroundResource(R.drawable.speak_button);
-                }
-            }
-        });
-        connectionView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(b){
-                    connectionView.setBackgroundResource(R.drawable.speak_button_yellow);
-                }else{
-                    connectionView.setBackgroundResource(R.drawable.speak_button);
                 }
             }
         });
@@ -407,6 +350,8 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
             public void onClick(View v) {
 
                 System.out.println("sono qui a domandarmi il senso della vita");
+                button_stop.setVisibility(View.VISIBLE);
+                aloneInTheGreen.setVisibility(View.VISIBLE);
                 try {
                     if (mp_REC.isPlaying()) {
                         mp_REC.pause();
@@ -418,12 +363,11 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 System.out.println("rec button has been pressed");
                 manager.buttonPressed(LoggingTag.SPEAK);
 
-                button_speak.setBackgroundResource(R.drawable.speak_button_pressed);
                 System.out.println("trasto il plano");
                 listen();
                 System.out.println("non trasto più il plano");
 
-
+                button_stop.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -433,7 +377,8 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
             public void onClick(View v) {
 
                 manager.remoteLog(LoggingTag.BARGEINS.getTag());
-                button_stop.setVisibility(View.INVISIBLE); //SPAGHETTI
+                button_stop.setVisibility(View.INVISIBLE);
+                aloneInTheGreen.setVisibility(View.INVISIBLE);
 
                 new Handler().postDelayed(new Runnable() {
                                               @Override
@@ -494,6 +439,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         button1.bringToFront();
         button1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
                 //listen();
                 try {
                     if (mp_button.isPlaying()) {
@@ -539,6 +485,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         button2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
+
                     if (mp_button.isPlaying()) {
                         mp_button.pause();
                         mp_button.setVolume(1f,1f);
@@ -602,12 +549,36 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         checkBlink();
 
-
-
-
-        connectionView.setOnTouchListener(new View.OnTouchListener() {
+        connectionView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View view) {
+                dialogBuilder = new AlertDialog.Builder(ctx);
+                final View createPopup = getLayoutInflater().inflate(R.layout.popup_activity, null);
+                dialogBuilder.setView(createPopup);
+                dialog = dialogBuilder.create();
+
+                final EditText newIpEditText = createPopup.findViewById(R.id.newDataEditText);
+                Button setNewIp = createPopup.findViewById(R.id.setBtn);
+
+                setNewIp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        manager.updateIP(newIpEditText.getText().toString());
+                        dialog.cancel();
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+
+
+
+        /*connectionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Toast.makeText(getApplicationContext(),"No",Toast.LENGTH_SHORT).show();
                 System.out.println("TOUCH TOUCH");
 
                 SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
@@ -618,7 +589,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 }
 
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(FaceActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
 // Add the buttons
                 builder.setPositiveButton("Modifica", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -661,7 +632,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 builder.setMessage("IP: "+MQTTManager.ip+"\nStatus: "+messageOnline);
 
 // Create the AlertDialog
-                final AlertDialog dialog = builder.create();
+                AlertDialog dialog = builder.create();
 
                 dialog.setOnShowListener(new DialogInterface.OnShowListener() {
                     @Override
@@ -672,12 +643,11 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     }
                 });
 
-
-
                 dialog.show();
-                return false;
             }
-        });
+        });*/
+
+
 
 
 
@@ -738,7 +708,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 String message = "Luca Coraci Gay";
                 // MANCA LA RISORSA
                 Notification notification = new NotificationCompat.Builder(getApplicationContext(), "My notification")
-                        .setSmallIcon(R.drawable.button_bar_repeat)
+                        .setSmallIcon(R.drawable.button_bar_repeat_r)
                         .setContentTitle("title")
                         .setContentText(message)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -1723,7 +1693,10 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     runOnUiThread(new Runnable() {
                         public void run() {
                             Log.i("TextToSpeech","On Done");
+                            button_stop.setVisibility(View.INVISIBLE);
+                            aloneInTheGreen.setVisibility(View.INVISIBLE);
                             animation_while_speak.cancel();
+                            System.out.println("STO CHIUDENDO TUTTE LE ANIMAZIONI BELLE");
                             aloneInTheBlue.clearAnimation();
                             aloneInTheRed.clearAnimation();
                             aloneInTheGreen.clearAnimation();
@@ -1766,14 +1739,16 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     public void forceServerOnline(){
 
-        img.setImageResource(R.drawable.green);
-        img.setAnimation(server_online_animazione);
+        connectionView.setImageResource(R.drawable.green);
+        connectionView.setAnimation(server_online_animazione);
         server_online_animazione.start();
+        button_stop.setVisibility(View.INVISIBLE);
     }
     @Override
     public void serverOnline() {
-        img.setImageResource(R.drawable.green);
+        connectionView.setBackgroundResource(R.drawable.status_button_online);
         //Toast.makeText(getApplicationContext(), "Server Online", Toast.LENGTH_LONG).show();
+        button_stop.setVisibility(View.INVISIBLE);
 
         if(first < 2){
             first++;
@@ -1789,10 +1764,11 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     speakText("Server online", false);
                 }
             }
+            button_stop.setVisibility(View.INVISIBLE);
         }
         button_reconnect.setVisibility(View.INVISIBLE);
        // vetroRotto.setVisibility(View.INVISIBLE);
-        img.setAnimation(server_online_animazione);
+        connectionView.setAnimation(server_online_animazione);
         server_online_animazione.start();
         System.out.println("animazio guggulazio");
 
@@ -1801,8 +1777,8 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @Override
     public void serverOffline() {
         server_online_animazione.cancel();
-        ImageView img= (ImageView) findViewById(R.id.imageView_ServerStatus);
-        img.setImageResource(R.drawable.gdot_red_16);
+        ImageButton img= findViewById(R.id.imageView_ServerStatus);
+        button_stop.setVisibility(View.INVISIBLE);
 
         if(isActivityVisible()) {
             Toast.makeText(getApplicationContext(), "Server Offline", Toast.LENGTH_SHORT).show();
@@ -1813,6 +1789,7 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
         //vetroRotto.setVisibility(View.VISIBLE);
         button_reconnect.setVisibility(View.INVISIBLE);
+        button_stop.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -2100,6 +2077,8 @@ public class FaceActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         }, time);
     }
+
+
 
     public void setBackToNormalTime(Long backToNormalTime) {
         new Handler().postDelayed(new Runnable() {
